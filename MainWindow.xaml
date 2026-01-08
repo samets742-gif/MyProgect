@@ -1,0 +1,338 @@
+﻿<Window x:Class="CRUDSamsonovCAD.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:CRUDSamsonovCAD.Converters"
+        xmlns:behaviors="clr-namespace:CRUDSamsonovCAD.Services"
+        xmlns:models="clr-namespace:CRUDSamsonovCAD.Models"
+        Title="Справочная система приборов" Height="800" Width="1200">
+    <Window.Resources>
+        <conv:PartTypeToDisplayNameConverter x:Key="PartTypeToDisplayNameConverter" />
+        <conv:ByteArrayNullOrEmptyToVisibilityConverter x:Key="ByteArrayNullOrEmptyToVisibilityConverter" />
+        <conv:ImageSourceZoomWidthConverter x:Key="ImageSourceZoomWidthConverter" />
+
+        <DataTemplate DataType="{x:Type models:Spec07_02_BracketDto}">
+            <StackPanel>
+                <TextBlock Text="Кронштейн" FontWeight="Bold" />
+                <TextBlock Text="{Binding Length, StringFormat=Длина: {0}}" />
+                <TextBlock Text="{Binding Width, StringFormat=Ширина: {0}}" />
+                <TextBlock Text="{Binding Thickness, StringFormat=Толщина: {0}}" />
+                <TextBlock Text="{Binding Material, StringFormat=Материал: {0}}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_05_RollerDto}">
+            <StackPanel>
+                <TextBlock Text="Ролик" FontWeight="Bold" />
+                <TextBlock Text="{Binding Diameter, StringFormat=Диаметр: {0}}" />
+                <TextBlock Text="{Binding Width, StringFormat=Ширина: {0}}" />
+                <TextBlock Text="{Binding Material, StringFormat=Материал: {0}}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_06_FrameDto}">
+            <StackPanel>
+                <TextBlock Text="Рама" FontWeight="Bold" />
+                <TextBlock Text="{Binding Length, StringFormat=Длина: {0}}" />
+                <TextBlock Text="{Binding Width, StringFormat=Ширина: {0}}" />
+                <TextBlock Text="{Binding Height, StringFormat=Высота: {0}}" />
+                <TextBlock Text="{Binding Material, StringFormat=Материал: {0}}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_07_RollerDto}">
+            <StackPanel>
+                <TextBlock Text="Ролик" FontWeight="Bold" />
+                <TextBlock Text="{Binding Diameter, StringFormat=Диаметр: {0}}" />
+                <TextBlock Text="{Binding Width, StringFormat=Ширина: {0}}" />
+                <TextBlock Text="{Binding Material, StringFormat=Материал: {0}}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_08_AdapterDto}">
+            <StackPanel>
+                <TextBlock Text="Адаптер" FontWeight="Bold" />
+                <TextBlock Text="{Binding Length, StringFormat=Длина: {0}}" />
+                <TextBlock Text="{Binding OuterDiameter, StringFormat=Наружный диаметр: {0}}" />
+                <TextBlock Text="{Binding InnerDiameter, StringFormat=Внутренний диаметр: {0}}" />
+                <TextBlock Text="{Binding Material, StringFormat=Материал: {0}}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_10_SpringDto}">
+            <StackPanel>
+                <TextBlock Text="Пружина" FontWeight="Bold" />
+                <TextBlock Text="{Binding WireDiameter, StringFormat=Диаметр проволоки: {0}}" />
+                <TextBlock Text="{Binding OuterDiameter, StringFormat=Наружный диаметр: {0}}" />
+                <TextBlock Text="{Binding FreeLength, StringFormat=Свободная длина: {0}}" />
+                <TextBlock Text="{Binding CoilsCount, StringFormat=Число витков: {0}}" />
+                <TextBlock Text="{Binding Material, StringFormat=Материал: {0}}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_11_StopDto}">
+            <StackPanel>
+                <TextBlock Text="Упор" FontWeight="Bold" />
+                <TextBlock Text="{Binding Length, StringFormat=Длина: {0}}" />
+                <TextBlock Text="{Binding Width, StringFormat=Ширина: {0}}" />
+                <TextBlock Text="{Binding Height, StringFormat=Высота: {0}}" />
+                <TextBlock Text="{Binding Material, StringFormat=Материал: {0}}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_14_RingDto}">
+            <StackPanel>
+                <TextBlock Text="Кольцо" FontWeight="Bold" />
+                <TextBlock Text="{Binding OuterDiameter, StringFormat=Наружный диаметр: {0}}" />
+                <TextBlock Text="{Binding InnerDiameter, StringFormat=Внутренний диаметр: {0}}" />
+                <TextBlock Text="{Binding Thickness, StringFormat=Толщина: {0}}" />
+                <TextBlock Text="{Binding Material, StringFormat=Материал: {0}}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_15_ScrewDto}">
+            <StackPanel>
+                <TextBlock Text="Винт" FontWeight="Bold" />
+                <TextBlock Text="{Binding Diameter, StringFormat=Диаметр: {0}}" />
+                <TextBlock Text="{Binding Length, StringFormat=Длина: {0}}" />
+                <TextBlock Text="{Binding ThreadPitch, StringFormat=Шаг резьбы: {0}}" />
+                <TextBlock Text="{Binding HeadType, StringFormat=Тип головки: {0}}" />
+                <TextBlock Text="{Binding Material, StringFormat=Материал: {0}}" />
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="2*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Header="Приборы" Grid.Row="0" Grid.Column="0" Margin="5">
+            <DockPanel>
+                <TabControl DockPanel.Dock="Top" Margin="0,0,0,5">
+                    <TabItem Header="Действия">
+                        <WrapPanel Margin="5">
+                            <Button Content="Добавить" Command="{Binding AddDeviceCommand}" Margin="0,0,8,6" />
+                            <Button Content="Изменить" Command="{Binding EditDeviceCommand}" Margin="0,0,8,6" />
+                            <Button Content="Удалить" Command="{Binding DeleteDeviceCommand}" Margin="0,0,8,6" />
+                            <Button Content="Открыть 3D-сборку Siemens NX" Command="{Binding OpenDeviceNxCommand}" Margin="0,0,8,6" />
+                            <Button Content="Печать чертежа сборки" Command="{Binding PrintDeviceDrawingCommand}" Margin="0,0,8,6" />
+                        </WrapPanel>
+                    </TabItem>
+                    <TabItem Header="Импорт">
+                        <WrapPanel Margin="5">
+                            <Button Content="Импорт прибора Word" Command="{Binding ImportDeviceWordCommand}" Margin="0,0,8,6" />
+                            <Button Content="Импорт прибора Excel" Command="{Binding ImportDeviceExcelCommand}" Margin="0,0,8,6" />
+                            <Button Content="Импорт прибора XML" Command="{Binding ImportDeviceXmlCommand}" Margin="0,0,8,6" />
+                        </WrapPanel>
+                    </TabItem>
+                    <TabItem Header="Экспорт">
+                        <WrapPanel Margin="5">
+                            <Button Content="Экспорт прибора Word" Command="{Binding ExportDeviceWordCommand}" Margin="0,0,8,6" />
+                            <Button Content="Экспорт прибора Excel" Command="{Binding ExportDeviceExcelCommand}" Margin="0,0,8,6" />
+                            <Button Content="Экспорт прибора XML" Command="{Binding ExportDeviceXmlCommand}" Margin="0,0,8,6" />
+                        </WrapPanel>
+                    </TabItem>
+                </TabControl>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,5">
+                    <TextBlock Text="Поиск прибора:" VerticalAlignment="Center" Margin="0,0,5,0" />
+                    <TextBox Width="220" Text="{Binding DeviceSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+                <DataGrid ItemsSource="{Binding DevicesView}" SelectedItem="{Binding SelectedDevice}"
+                          AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" Width="*" />
+                        <DataGridTextColumn Header="Код" Binding="{Binding Code}" Width="120" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </GroupBox>
+
+        <GroupBox Header="Детали прибора" Grid.Row="0" Grid.Column="1" Margin="5">
+            <DockPanel>
+                <TabControl DockPanel.Dock="Top" Margin="0,0,0,5">
+                    <TabItem Header="Действия">
+                        <WrapPanel Margin="5">
+                            <Button Content="Добавить" Command="{Binding AddPartCommand}" Margin="0,0,8,6" />
+                            <Button Content="Изменить" Command="{Binding EditPartCommand}" Margin="0,0,8,6" />
+                            <Button Content="Удалить" Command="{Binding DeletePartCommand}" Margin="0,0,8,6" />
+                            <Button Content="Открыть 3D-модель Siemens NX" Command="{Binding OpenNxCommand}" Margin="0,0,8,6" />
+                            <Button Content="Пользовательские типы" Command="{Binding ManageCustomTypesCommand}" Margin="0,0,8,6" />
+                            <Button Content="Печать чертежа детали" Command="{Binding PrintPartDrawingCommand}" Margin="0,0,8,6" />
+                        </WrapPanel>
+                    </TabItem>
+                    <TabItem Header="Импорт">
+                        <WrapPanel Margin="5">
+                            <Button Content="Импорт деталей Word" Command="{Binding ImportPartsWordCommand}" Margin="0,0,8,6" />
+                            <Button Content="Импорт деталей Excel" Command="{Binding ImportPartsExcelCommand}" Margin="0,0,8,6" />
+                            <Button Content="Импорт деталей XML" Command="{Binding ImportPartsXmlCommand}" Margin="0,0,8,6" />
+                        </WrapPanel>
+                    </TabItem>
+                    <TabItem Header="Экспорт">
+                        <WrapPanel Margin="5">
+                            <Button Content="Экспорт выбранных Word" Command="{Binding ExportSelectedWordCommand}" Margin="0,0,8,6" />
+                            <Button Content="Экспорт выбранных Excel" Command="{Binding ExportSelectedExcelCommand}" Margin="0,0,8,6" />
+                            <Button Content="Экспорт выбранных XML" Command="{Binding ExportSelectedXmlCommand}" Margin="0,0,8,6" />
+                        </WrapPanel>
+                    </TabItem>
+                </TabControl>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,5">
+                    <TextBlock Text="Поиск детали:" VerticalAlignment="Center" Margin="0,0,5,0" />
+                    <TextBox Width="220" Text="{Binding PartSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+                <DataGrid ItemsSource="{Binding PartsView}" SelectedItem="{Binding SelectedPart}"
+                          SelectionMode="Extended" SelectionUnit="FullRow"
+                          behaviors:DataGridSelectedItemsBehavior.SelectedItems="{Binding SelectedParts}"
+                          AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </GroupBox>
+
+        <GroupBox Header="Карточки" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
+            <TabControl>
+                <TabItem Header="Карточка прибора">
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="3*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="5">
+                            <TextBlock Text="Прибор" FontWeight="Bold" Margin="0,0,0,5" />
+                            <TextBlock Text="{Binding SelectedDevice.Name, StringFormat=Наименование: {0}}" />
+                            <TextBlock Text="{Binding SelectedDevice.Code, StringFormat=Код: {0}}" />
+                            <TextBlock Text="{Binding SelectedDevice.Description, StringFormat=Описание: {0}}" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding SelectedDevice.NxModelPath, StringFormat=NX-сборка: {0}}" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Grid Grid.Column="1" Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1" Margin="0,0,5,0">
+                                <Grid>
+                                    <Image Stretch="Uniform" Source="{Binding SelectedDeviceImage}">
+                                        <Image.ToolTip>
+                                            <Border Padding="6" Background="White" BorderBrush="Gray" BorderThickness="1">
+                                                <Image Source="{Binding SelectedDeviceImage}"
+                                                       Stretch="Uniform"
+                                                       Width="{Binding SelectedDeviceImage, Converter={StaticResource ImageSourceZoomWidthConverter}, ConverterParameter='600;900'}" />
+                                            </Border>
+                                        </Image.ToolTip>
+                                    </Image>
+                                    <TextBlock Text="Чертеж сборки отсутствует"
+                                               Foreground="Gray"
+                                               FontStyle="Italic"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Visibility="{Binding SelectedDevice.DrawingImage, Converter={StaticResource ByteArrayNullOrEmptyToVisibilityConverter}}" />
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Margin="5,0,0,0">
+                                <Grid>
+                                    <Image Stretch="Uniform" Source="{Binding SelectedPartImage}">
+                                        <Image.ToolTip>
+                                            <Border Padding="6" Background="White" BorderBrush="Gray" BorderThickness="1">
+                                                <Image Source="{Binding SelectedPartImage}"
+                                                       Stretch="Uniform"
+                                                       Width="{Binding SelectedPartImage, Converter={StaticResource ImageSourceZoomWidthConverter}, ConverterParameter='600;900'}" />
+                                            </Border>
+                                        </Image.ToolTip>
+                                    </Image>
+                                    <TextBlock Text="Чертеж детали отсутствует"
+                                               Foreground="Gray"
+                                               FontStyle="Italic"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Visibility="{Binding SelectedPart.DrawingImage, Converter={StaticResource ByteArrayNullOrEmptyToVisibilityConverter}}" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Карточка детали">
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="3*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="5">
+                            <TextBlock Text="Параметры детали" FontWeight="Bold" Margin="0,0,0,5" />
+                            <ContentControl Content="{Binding SelectedSpec}" />
+                            <ItemsControl ItemsSource="{Binding SelectedCustomFields}" Margin="0,5,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock>
+                                            <Run Text="{Binding Name}" />
+                                            <Run Text=": " />
+                                            <Run Text="{Binding Value}" />
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                        <Grid Grid.Column="1" Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1" Margin="0,0,5,0">
+                                <Grid>
+                                    <Image Stretch="Uniform" Source="{Binding SelectedDeviceImage}">
+                                        <Image.ToolTip>
+                                            <Border Padding="6" Background="White" BorderBrush="Gray" BorderThickness="1">
+                                                <Image Source="{Binding SelectedDeviceImage}"
+                                                       Stretch="Uniform"
+                                                       Width="{Binding SelectedDeviceImage, Converter={StaticResource ImageSourceZoomWidthConverter}, ConverterParameter='600;900'}" />
+                                            </Border>
+                                        </Image.ToolTip>
+                                    </Image>
+                                    <TextBlock Text="Чертеж сборки отсутствует"
+                                               Foreground="Gray"
+                                               FontStyle="Italic"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Visibility="{Binding SelectedDevice.DrawingImage, Converter={StaticResource ByteArrayNullOrEmptyToVisibilityConverter}}" />
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Margin="5,0,0,0">
+                                <Grid>
+                                    <Image Stretch="Uniform" Source="{Binding SelectedPartImage}">
+                                        <Image.ToolTip>
+                                            <Border Padding="6" Background="White" BorderBrush="Gray" BorderThickness="1">
+                                                <Image Source="{Binding SelectedPartImage}"
+                                                       Stretch="Uniform"
+                                                       Width="{Binding SelectedPartImage, Converter={StaticResource ImageSourceZoomWidthConverter}, ConverterParameter='600;900'}" />
+                                            </Border>
+                                        </Image.ToolTip>
+                                    </Image>
+                                    <TextBlock Text="Чертеж детали отсутствует"
+                                               Foreground="Gray"
+                                               FontStyle="Italic"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Visibility="{Binding SelectedPart.DrawingImage, Converter={StaticResource ByteArrayNullOrEmptyToVisibilityConverter}}" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </GroupBox>
+    </Grid>
+</Window>

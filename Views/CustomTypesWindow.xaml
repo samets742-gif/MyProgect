@@ -1,0 +1,46 @@
+<Window x:Class="CRUDSamsonovCAD.Views.CustomTypesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Пользовательские типы" Height="520" Width="900" WindowStartupLocation="CenterOwner">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Header="Типы" Grid.Column="0" Margin="0,0,10,0">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,5">
+                    <Button Content="Добавить" Command="{Binding AddTypeCommand}" Margin="0,0,5,0" />
+                    <Button Content="Изменить" Command="{Binding EditTypeCommand}" Margin="0,0,5,0" />
+                    <Button Content="Удалить" Command="{Binding DeleteTypeCommand}" />
+                </StackPanel>
+                <DataGrid ItemsSource="{Binding Types}" SelectedItem="{Binding SelectedType}"
+                          AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </GroupBox>
+
+        <GroupBox Header="Параметры" Grid.Column="1">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,5">
+                    <Button Content="Добавить" Command="{Binding AddParamCommand}" Margin="0,0,5,0" />
+                    <Button Content="Изменить" Command="{Binding EditParamCommand}" Margin="0,0,5,0" />
+                    <Button Content="Удалить" Command="{Binding DeleteParamCommand}" />
+                </StackPanel>
+                <DataGrid ItemsSource="{Binding Params}" SelectedItem="{Binding SelectedParam}"
+                          AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Имя" Binding="{Binding ParamName}" Width="*" />
+                        <DataGridTextColumn Header="Тип" Binding="{Binding ParamKind}" Width="120" />
+                        <DataGridTextColumn Header="Список" Binding="{Binding ListValues}" Width="200" />
+                        <DataGridTextColumn Header="Порядок" Binding="{Binding SortOrder}" Width="80" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </GroupBox>
+    </Grid>
+</Window>

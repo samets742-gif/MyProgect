@@ -1,0 +1,229 @@
+<Window x:Class="CRUDSamsonovCAD.Views.PartEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="clr-namespace:CRUDSamsonovCAD.Models"
+        xmlns:conv="clr-namespace:CRUDSamsonovCAD.Converters"
+        xmlns:vm="clr-namespace:CRUDSamsonovCAD.ViewModels"
+        Title="Деталь" Height="650" Width="850"
+        MinWidth="640" MinHeight="420"
+        MaxWidth="{x:Static SystemParameters.PrimaryScreenWidth}"
+        MaxHeight="{x:Static SystemParameters.PrimaryScreenHeight}"
+        WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <conv:ParamKindToVisibilityConverter x:Key="ParamKindToVisibilityConverter" />
+
+        <DataTemplate DataType="{x:Type models:Spec07_02_BracketDto}">
+            <StackPanel>
+                <TextBlock Text="Кронштейн" FontWeight="Bold" Margin="0,0,0,5" />
+                <TextBlock Text="Длина" />
+                <TextBox Text="{Binding Length, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Ширина" />
+                <TextBox Text="{Binding Width, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Толщина" />
+                <TextBox Text="{Binding Thickness, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Материал" />
+                <TextBox Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_05_RollerDto}">
+            <StackPanel>
+                <TextBlock Text="Ролик" FontWeight="Bold" Margin="0,0,0,5" />
+                <TextBlock Text="Диаметр" />
+                <TextBox Text="{Binding Diameter, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Ширина" />
+                <TextBox Text="{Binding Width, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Материал" />
+                <TextBox Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_06_FrameDto}">
+            <StackPanel>
+                <TextBlock Text="Рама" FontWeight="Bold" Margin="0,0,0,5" />
+                <TextBlock Text="Длина" />
+                <TextBox Text="{Binding Length, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Ширина" />
+                <TextBox Text="{Binding Width, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Высота" />
+                <TextBox Text="{Binding Height, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Материал" />
+                <TextBox Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_07_RollerDto}">
+            <StackPanel>
+                <TextBlock Text="Ролик" FontWeight="Bold" Margin="0,0,0,5" />
+                <TextBlock Text="Диаметр" />
+                <TextBox Text="{Binding Diameter, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Ширина" />
+                <TextBox Text="{Binding Width, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Материал" />
+                <TextBox Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_08_AdapterDto}">
+            <StackPanel>
+                <TextBlock Text="Адаптер" FontWeight="Bold" Margin="0,0,0,5" />
+                <TextBlock Text="Длина" />
+                <TextBox Text="{Binding Length, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Наружный диаметр" />
+                <TextBox Text="{Binding OuterDiameter, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Внутренний диаметр" />
+                <TextBox Text="{Binding InnerDiameter, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Материал" />
+                <TextBox Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_10_SpringDto}">
+            <StackPanel>
+                <TextBlock Text="Пружина" FontWeight="Bold" Margin="0,0,0,5" />
+                <TextBlock Text="Диаметр проволоки" />
+                <TextBox Text="{Binding WireDiameter, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Наружный диаметр" />
+                <TextBox Text="{Binding OuterDiameter, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Свободная длина" />
+                <TextBox Text="{Binding FreeLength, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Число витков" />
+                <TextBox Text="{Binding CoilsCount, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Материал" />
+                <TextBox Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_11_StopDto}">
+            <StackPanel>
+                <TextBlock Text="Упор" FontWeight="Bold" Margin="0,0,0,5" />
+                <TextBlock Text="Длина" />
+                <TextBox Text="{Binding Length, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Ширина" />
+                <TextBox Text="{Binding Width, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Высота" />
+                <TextBox Text="{Binding Height, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Материал" />
+                <TextBox Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_14_RingDto}">
+            <StackPanel>
+                <TextBlock Text="Кольцо" FontWeight="Bold" Margin="0,0,0,5" />
+                <TextBlock Text="Наружный диаметр" />
+                <TextBox Text="{Binding OuterDiameter, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Внутренний диаметр" />
+                <TextBox Text="{Binding InnerDiameter, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Толщина" />
+                <TextBox Text="{Binding Thickness, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Материал" />
+                <TextBox Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:Spec07_15_ScrewDto}">
+            <StackPanel>
+                <TextBlock Text="Винт" FontWeight="Bold" Margin="0,0,0,5" />
+                <TextBlock Text="Диаметр" />
+                <TextBox Text="{Binding Diameter, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Длина" />
+                <TextBox Text="{Binding Length, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Шаг резьбы" />
+                <TextBox Text="{Binding ThreadPitch, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Тип головки" />
+                <TextBox Text="{Binding HeadType, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Материал" />
+                <TextBox Text="{Binding Material, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:CustomParamValueViewModel}">
+            <Grid Margin="0,0,0,8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                <TextBox Grid.Row="1"
+                         Text="{Binding ValueText, UpdateSourceTrigger=PropertyChanged}"
+                         Visibility="{Binding Kind, Converter={StaticResource ParamKindToVisibilityConverter}, ConverterParameter=Text}" />
+                <TextBox Grid.Row="1"
+                         Text="{Binding ValueText, UpdateSourceTrigger=PropertyChanged}"
+                         Visibility="{Binding Kind, Converter={StaticResource ParamKindToVisibilityConverter}, ConverterParameter=Number}" />
+                <DatePicker Grid.Row="1"
+                            Text="{Binding ValueText, UpdateSourceTrigger=PropertyChanged}"
+                            Visibility="{Binding Kind, Converter={StaticResource ParamKindToVisibilityConverter}, ConverterParameter=Date}" />
+                <ComboBox Grid.Row="1"
+                          ItemsSource="{Binding ListItems}"
+                          Text="{Binding ValueText, UpdateSourceTrigger=PropertyChanged}"
+                          Visibility="{Binding Kind, Converter={StaticResource ParamKindToVisibilityConverter}, ConverterParameter=List}" />
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+
+    <DockPanel Margin="10">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Сохранить" Width="120" Margin="0,0,5,0" Click="OnSave" />
+            <Button Content="Отмена" Width="120" Click="OnCancel" />
+        </StackPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="3*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Row="0" Grid.ColumnSpan="2">
+                    <TextBlock Text="Наименование" />
+                    <TextBox Text="{Binding Part.Name, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="Тип детали" Margin="0,5,0,0" />
+                    <ComboBox ItemsSource="{Binding PartTypes}" SelectedItem="{Binding SelectedPartType}" />
+                    <TextBlock Text="Путь к NX-модели" Margin="0,5,0,0" />
+                    <DockPanel>
+                        <Button Content="Выбрать" Command="{Binding BrowseNxCommand}" DockPanel.Dock="Right" Margin="5,0,0,0" />
+                        <TextBox Text="{Binding Part.NxModelPath, UpdateSourceTrigger=PropertyChanged}" />
+                    </DockPanel>
+                    <TextBlock Text="Примечание" Margin="0,5,0,0" />
+                    <TextBox Text="{Binding Part.Notes, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Height="60" />
+                </StackPanel>
+
+                <GroupBox Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Header="Параметры" Margin="0,10,10,0">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <ContentControl Content="{Binding SelectedSpec}"
+                                            Visibility="{Binding IsCustomType, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}" />
+                            <ItemsControl ItemsSource="{Binding CustomParams}"
+                                          Visibility="{Binding IsCustomType, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                </GroupBox>
+
+                <GroupBox Grid.Row="1" Grid.Column="1" Header="Чертеж" Margin="0,10,0,0">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Загрузить" Command="{Binding BrowseImageCommand}" Margin="0,0,5,0" />
+                            <Button Content="Очистить" Command="{Binding ClearImageCommand}" />
+                        </StackPanel>
+                        <Border BorderBrush="Gray" BorderThickness="1">
+                            <Image Stretch="Uniform" Source="{Binding DrawingImagePreview}" />
+                        </Border>
+                    </DockPanel>
+                </GroupBox>
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

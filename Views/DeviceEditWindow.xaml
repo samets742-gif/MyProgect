@@ -1,0 +1,58 @@
+<Window x:Class="CRUDSamsonovCAD.Views.DeviceEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Прибор" Height="520" Width="700"
+        MinWidth="520" MinHeight="360"
+        MaxWidth="{x:Static SystemParameters.PrimaryScreenWidth}"
+        MaxHeight="{x:Static SystemParameters.PrimaryScreenHeight}"
+        WindowStartupLocation="CenterOwner">
+    <DockPanel Margin="10">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Сохранить" Width="100" Margin="0,0,5,0" Click="OnSave" />
+            <Button Content="Отмена" Width="100" Click="OnCancel" />
+        </StackPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="160" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Наименование" VerticalAlignment="Center" />
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Device.Name, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Код" VerticalAlignment="Center" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Device.Code, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Путь к NX-сборке" VerticalAlignment="Center" />
+                <DockPanel Grid.Row="2" Grid.Column="1">
+                    <Button Content="Выбрать" Command="{Binding BrowseNxCommand}" DockPanel.Dock="Right" Margin="5,0,0,0" />
+                    <TextBox Text="{Binding Device.NxModelPath, UpdateSourceTrigger=PropertyChanged}" />
+                </DockPanel>
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Описание" VerticalAlignment="Top" />
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Device.Description, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Height="60" />
+
+                <GroupBox Grid.Row="4" Grid.ColumnSpan="2" Header="Чертеж сборки" Margin="0,10,0,0">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Загрузить" Command="{Binding BrowseImageCommand}" Margin="0,0,5,0" />
+                            <Button Content="Очистить" Command="{Binding ClearImageCommand}" />
+                        </StackPanel>
+                        <Border BorderBrush="Gray" BorderThickness="1">
+                            <Image Stretch="Uniform" Source="{Binding DrawingImagePreview}" />
+                        </Border>
+                    </DockPanel>
+                </GroupBox>
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</Window>
