@@ -1,0 +1,88 @@
+<Window x:Class="DSS_Situational.Views.LearnDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Добавить прецедент в базу знаний"
+        Height="380" Width="440"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#F0F4F8">
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Background="#2E5FA3" Padding="16,10">
+            <TextBlock Text="Сохранение нового прецедента"
+                       FontSize="14" FontWeight="Bold" Foreground="White"/>
+        </Border>
+
+        <StackPanel Margin="16">
+            <TextBlock Text="Название ситуации:" FontSize="12" Margin="0,0,0,2"/>
+            <TextBox x:Name="TitleBox" Padding="6,4" Margin="0,0,0,10"
+                     BorderBrush="#B0BEC5" BorderThickness="1" FontSize="12"/>
+
+            <TextBlock Text="Категория:" FontSize="12" Margin="0,0,0,2"/>
+            <TextBox x:Name="CategoryBox" Padding="6,4" Margin="0,0,0,10"
+                     BorderBrush="#B0BEC5" BorderThickness="1" FontSize="12"
+                     Text="Общее"/>
+
+            <TextBlock Text="Решение (название):" FontSize="12" Margin="0,0,0,2"/>
+            <TextBox x:Name="DecisionTitleBox" Padding="6,4" Margin="0,0,0,10"
+                     BorderBrush="#B0BEC5" BorderThickness="1" FontSize="12"/>
+
+            <TextBlock Text="Описание решения / действия:" FontSize="12" Margin="0,0,0,2"/>
+            <TextBox x:Name="DecisionDescBox" Padding="6,4" Height="70"
+                     TextWrapping="Wrap" AcceptsReturn="True"
+                     VerticalScrollBarVisibility="Auto"
+                     BorderBrush="#B0BEC5" BorderThickness="1" FontSize="12"
+                     Margin="0,0,0,10"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <TextBlock Text="Приоритет решения:" FontSize="12"
+                           VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <ComboBox x:Name="PriorityBox" Width="80" FontSize="12"
+                          SelectedIndex="0" Padding="6,3">
+                    <ComboBoxItem Content="1 (высокий)"/>
+                    <ComboBoxItem Content="2 (средний)"/>
+                    <ComboBoxItem Content="3 (низкий)"/>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Сохранить" Click="OnSave"
+                        Background="#27AE60" Foreground="White"
+                        Padding="16,7" Margin="0,0,8,0"
+                        FontSize="13" BorderThickness="0" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#1E8449"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button Content="Отмена" Click="OnCancel"
+                        Background="#90A4AE" Foreground="White"
+                        Padding="16,7" FontSize="13" BorderThickness="0" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#607D8B"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </DockPanel>
+</Window>

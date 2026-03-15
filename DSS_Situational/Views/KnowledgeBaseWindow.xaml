@@ -1,0 +1,203 @@
+<Window x:Class="DSS_Situational.Views.KnowledgeBaseWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="База знаний — Прецеденты ситуаций"
+        Height="600" Width="900"
+        WindowStartupLocation="CenterOwner"
+        Background="#F0F4F8">
+    <Window.Resources>
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#2E5FA3"/>
+        <Style x:Key="PrimaryBtn" TargetType="Button">
+            <Setter Property="Background" Value="#2E5FA3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="12,5"/>
+            <Setter Property="Margin" Value="3,2"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1A3F7A"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#B0BEC5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="RedBtn" TargetType="Button" BasedOn="{StaticResource PrimaryBtn}">
+            <Setter Property="Background" Value="#E74C3C"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#C0392B"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel>
+        <!-- Шапка -->
+        <Border DockPanel.Dock="Top" Background="#2E5FA3" Padding="16,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="База знаний · Прецеденты ситуаций"
+                           FontSize="16" FontWeight="Bold" Foreground="White"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Width="200" Padding="6,4" FontSize="12"
+                             BorderBrush="#90CAF9" BorderThickness="1">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="TextBox">
+                                            <Border Background="White" CornerRadius="4"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ScrollViewer x:Name="PART_ContentHost"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                    <TextBlock Text="🔍 Поиск" Foreground="#BBDEFB" VerticalAlignment="Center"
+                               Margin="6,0,0,0" FontSize="12"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Статус -->
+        <Border DockPanel.Dock="Bottom" Background="#E3F2FD" Padding="12,5">
+            <TextBlock Text="{Binding StatusMessage}" FontSize="11" Foreground="#1A237E"/>
+        </Border>
+
+        <!-- Тулбар -->
+        <Border DockPanel.Dock="Bottom" Background="#ECEFF1" Padding="8,4">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Удалить запись"
+                        Style="{StaticResource RedBtn}"
+                        Command="{Binding DeleteCommand}"/>
+                <Button Content="Обновить"
+                        Style="{StaticResource PrimaryBtn}"
+                        Command="{Binding RefreshCommand}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Основное содержимое -->
+        <Grid Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Список прецедентов -->
+            <Border Grid.Column="0" Background="White" CornerRadius="6"
+                    Margin="0,0,4,0"
+                    BorderBrush="#E0E0E0" BorderThickness="1">
+                <DataGrid ItemsSource="{Binding Entries}"
+                          SelectedItem="{Binding SelectedEntry}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          FontSize="12"
+                          BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Ситуация"
+                                            Binding="{Binding ReferenceSituation.Name}"
+                                            Width="160"/>
+                        <DataGridTextColumn Header="Категория"
+                                            Binding="{Binding Category}"
+                                            Width="100"/>
+                        <DataGridTextColumn Header="Решение"
+                                            Binding="{Binding Decision.Title}"
+                                            Width="*"/>
+                        <DataGridTextColumn Header="Использ."
+                                            Binding="{Binding UsageCount}"
+                                            Width="70"/>
+                        <DataGridTextColumn Header="Последнее"
+                                            Binding="{Binding LastUsed, StringFormat=dd.MM.yyyy}"
+                                            Width="90"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Детали выбранной записи -->
+            <Border Grid.Column="1" Background="White" CornerRadius="6"
+                    Margin="4,0,0,0" Padding="12"
+                    BorderBrush="#E0E0E0" BorderThickness="1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Параметры эталонной ситуации"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="#2E5FA3" Margin="0,0,0,6"/>
+                        <ItemsControl ItemsSource="{Binding SelectedParameters}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="6,3" Margin="0,1"
+                                            Background="#F5F5F5" CornerRadius="3">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Name}" FontSize="11"/>
+                                            <TextBlock Grid.Column="1" FontSize="11"
+                                                       FontWeight="SemiBold" Foreground="#2E5FA3">
+                                                <Run Text="{Binding Value, StringFormat=F2}"/>
+                                                <Run Text=" "/>
+                                                <Run Text="{Binding Unit}"/>
+                                            </TextBlock>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Separator Margin="0,10"/>
+
+                        <TextBlock Text="Решение"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="#2E5FA3" Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding SelectedEntry.Decision.Title,
+                                   FallbackValue='—'}"
+                                   FontWeight="Bold" FontSize="12" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding SelectedEntry.Decision.Description,
+                                   FallbackValue=''}"
+                                   FontSize="11" TextWrapping="Wrap"
+                                   Margin="0,4,0,0" Foreground="#546E7A"/>
+
+                        <TextBlock Text="Действия:" FontSize="11" FontWeight="SemiBold"
+                                   Margin="0,8,0,4"/>
+                        <ItemsControl ItemsSource="{Binding SelectedActions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock FontSize="11" TextWrapping="Wrap" Margin="0,2">
+                                        <Run Text="• "/>
+                                        <Run Text="{Binding}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </DockPanel>
+</Window>
