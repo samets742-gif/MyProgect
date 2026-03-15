@@ -1,0 +1,32 @@
+name: CI — Сборка проектов
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore — DSS_Blazor
+        run: dotnet restore DSS_Blazor/DSS_Blazor.csproj
+
+      - name: Build — DSS_Blazor
+        run: dotnet build DSS_Blazor/DSS_Blazor.csproj -c Release --no-restore
+
+      - name: Restore — DSS_Avalonia
+        run: dotnet restore DSS_Avalonia/DSS_Avalonia.csproj
+
+      - name: Build — DSS_Avalonia
+        run: dotnet build DSS_Avalonia/DSS_Avalonia.csproj -c Release --no-restore
