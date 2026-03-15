@@ -1,0 +1,346 @@
+@page "/"
+@inject KnowledgeBaseService KbService
+@inject DecisionEngine Engine
+
+<PageTitle>СППР — Анализ ситуации</PageTitle>
+
+@if (!_initialized)
+{
+    <div class="loading-screen">
+        <div class="spinner"></div>
+        <p>Загрузка базы знаний…</p>
+    </div>
+}
+else
+{
+    <div class="page-grid">
+
+        <!-- ══ Левая панель: ввод ══ -->
+        <div class="left-panel">
+
+            <!-- Описание -->
+            <div class="card">
+                <h3 class="card-title">📋 Текущая ситуация</h3>
+                <div class="form-group">
+                    <label>Название</label>
+                    <input class="form-input" @bind="_situationName"
+                           placeholder="Например: Авария насоса №3"/>
+                </div>
+                <div class="form-group">
+                    <label>Описание (необязательно)</label>
+                    <textarea class="form-input" @bind="_situationDesc"
+                              rows="2" placeholder="Дополнительные сведения..."></textarea>
+                </div>
+            </div>
+
+            <!-- Параметры -->
+            <div class="card">
+                <div class="card-header-row">
+                    <h3 class="card-title">⚙️ Параметры</h3>
+                    <button class="btn btn-green btn-sm" @onclick="AddParameter">+ Добавить</button>
+                </div>
+
+                <div class="params-table">
+                    <div class="params-header">
+                        <span>Параметр</span>
+                        <span>Значение</span>
+                        <span>Ед.</span>
+                        <span>Вес</span>
+                        <span></span>
+                    </div>
+                    @foreach (var p in _parameters)
+                    {
+                        <div class="params-row">
+                            <input class="form-input param-input"
+                                   @bind="p.Name" placeholder="Параметр"/>
+                            <input class="form-input param-input"
+                                   type="number" step="0.01"
+                                   @bind="p.Value"/>
+                            <input class="form-input param-input"
+                                   @bind="p.Unit" placeholder="°C"/>
+                            <input class="form-input param-input"
+                                   type="number" step="0.1" min="0" max="1"
+                                   @bind="p.Weight"/>
+                            <button class="btn-icon danger"
+                                    @onclick="() => RemoveParameter(p)">✕</button>
+                        </div>
+                    }
+                </div>
+                <p class="hint">Вес [0..1] — важность параметра</p>
+            </div>
+
+            <!-- Настройки -->
+            <div class="card">
+                <h3 class="card-title">🎛️ Настройки</h3>
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label>Порог сходства: <strong>@(_threshold.ToString("P0"))</strong></label>
+                        <input type="range" min="0.1" max="0.9" step="0.05"
+                               @bind="_threshold" @bind:event="oninput" class="slider"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Макс. результатов: <strong>@_maxResults</strong></label>
+                        <input type="range" min="1" max="10" step="1"
+                               @bind="_maxResults" @bind:event="oninput" class="slider"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select class="form-input" @bind="_categoryFilter">
+                        <option value="">Все категории</option>
+                        @foreach (var cat in _categories)
+                        {
+                            <option value="@cat">@cat</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Кнопки -->
+            <div class="action-buttons">
+                <button class="btn btn-primary btn-large" @onclick="AnalyzeAsync"
+                        disabled="@_isAnalyzing">
+                    @if (_isAnalyzing) { <span>Анализ…</span> }
+                    else { <span>▶ Анализ ситуации</span> }
+                </button>
+                <div class="action-row">
+                    <button class="btn btn-green" @onclick="ShowLearnModal"
+                            disabled="@(!_results.Any())">
+                        💾 Сохранить прецедент
+                    </button>
+                    <button class="btn btn-red" @onclick="ClearAll">
+                        🗑 Очистить
+                    </button>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(_statusMsg))
+            {
+                <div class="status-bar @_statusClass">@_statusMsg</div>
+            }
+        </div>
+
+        <!-- ══ Правая панель: результаты ══ -->
+        <div class="right-panel">
+            <h3 class="section-title">📊 Результаты распознавания</h3>
+
+            @if (!_results.Any() && _analyzed)
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">🔍</div>
+                    <p>Подходящих прецедентов не найдено</p>
+                    <p class="hint">Попробуйте снизить порог сходства</p>
+                </div>
+            }
+
+            @foreach (var r in _results)
+            {
+                <div class="result-card @(r == _selected ? "selected" : "")"
+                     @onclick="() => _selected = r">
+                    <div class="result-header">
+                        <div class="result-title">@r.SituationName</div>
+                        <div class="similarity-badge @GetSimilarityClass(r.Similarity)">
+                            @r.SimilarityPercent
+                        </div>
+                    </div>
+                    <div class="result-decision">@r.RecommendedDecision.Title</div>
+                    <div class="result-meta">
+                        <span class="tag">@r.Category</span>
+                        <span class="confidence @GetConfidenceClass(r.Similarity)">@r.ConfidenceLevel</span>
+                    </div>
+                </div>
+            }
+
+            <!-- Детали выбранного результата -->
+            @if (_selected != null)
+            {
+                <div class="card decision-detail">
+                    <h3 class="card-title">✅ Рекомендуемое решение</h3>
+                    <h4 class="decision-title">@_selected.RecommendedDecision.Title</h4>
+                    <p class="decision-desc">@_selected.RecommendedDecision.Description</p>
+
+                    @if (_selected.RecommendedDecision.Actions.Any())
+                    {
+                        <div class="actions-list">
+                            <p class="actions-label">Действия:</p>
+                            @foreach (var action in _selected.RecommendedDecision.Actions)
+                            {
+                                <div class="action-item">
+                                    <span class="action-bullet">•</span>
+                                    <span>@action</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    <div class="decision-meta">
+                        <span>Приоритет: @_selected.RecommendedDecision.Priority</span>
+                        <span>Сходство: @_selected.SimilarityPercent</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<!-- ══ Модальное окно: сохранение прецедента ══ -->
+@if (_showLearnModal)
+{
+    <div class="modal-overlay" @onclick="CloseLearnModal">
+        <div class="modal" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>💾 Сохранить прецедент</h3>
+                <button class="btn-icon" @onclick="CloseLearnModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Название ситуации</label>
+                    <input class="form-input" @bind="_learn.SituationTitle"
+                           placeholder="Название ситуации"/>
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <input class="form-input" @bind="_learn.Category"
+                           placeholder="Например: Диагностика оборудования"/>
+                </div>
+                <div class="form-group">
+                    <label>Название решения *</label>
+                    <input class="form-input @(_learnError ? "input-error" : "")"
+                           @bind="_learn.DecisionTitle"
+                           placeholder="Краткое название решения"/>
+                </div>
+                <div class="form-group">
+                    <label>Описание / действия</label>
+                    <textarea class="form-input" @bind="_learn.DecisionDescription"
+                              rows="3" placeholder="Описание и конкретные действия..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Приоритет</label>
+                    <select class="form-input" @bind="_learn.Priority">
+                        <option value="1">1 — высокий</option>
+                        <option value="2">2 — средний</option>
+                        <option value="3">3 — низкий</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-green" @onclick="SavePrecedentAsync">Сохранить</button>
+                <button class="btn btn-gray" @onclick="CloseLearnModal">Отмена</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    // ── State ──────────────────────────────────────────────────────────────
+    bool _initialized, _isAnalyzing, _analyzed, _showLearnModal, _learnError;
+    string _situationName = "", _situationDesc = "", _categoryFilter = "", _statusMsg = "", _statusClass = "";
+    double _threshold = 0.3;
+    int _maxResults = 5;
+    List<SituationParameter> _parameters = new();
+    List<RecognitionResult> _results = new();
+    List<string> _categories = new();
+    RecognitionResult? _selected;
+    LearnDialogResult _learn = new();
+
+    // ── Lifecycle ──────────────────────────────────────────────────────────
+    protected override async Task OnInitializedAsync()
+    {
+        await KbService.InitializeAsync();
+        RefreshCategories();
+        AddDefaultParameters();
+        _initialized = true;
+    }
+
+    void AddDefaultParameters()
+    {
+        _parameters = new()
+        {
+            new("Температура", 0, 1.0, "°C"),
+            new("Давление",    0, 1.0, "бар"),
+            new("Вибрация",    0, 1.0, "мм/с"),
+            new("Нагрузка",    0, 0.8, "%")
+        };
+    }
+
+    // ── Commands ───────────────────────────────────────────────────────────
+    void AddParameter() =>
+        _parameters.Add(new SituationParameter("Новый параметр", 0, 1.0));
+
+    void RemoveParameter(SituationParameter p) => _parameters.Remove(p);
+
+    async Task AnalyzeAsync()
+    {
+        if (_parameters.Count == 0) { SetStatus("Добавьте хотя бы один параметр.", "warn"); return; }
+
+        _isAnalyzing = true;
+        StateHasChanged();
+
+        Engine.SimilarityThreshold = _threshold;
+        Engine.MaxResults = _maxResults;
+        Engine.CategoryFilter = string.IsNullOrEmpty(_categoryFilter) ? null : _categoryFilter;
+
+        var situation = BuildSituation();
+        _results = await Engine.AnalyzeAsync(situation);
+        _selected = _results.FirstOrDefault();
+        _analyzed = true;
+
+        SetStatus(_results.Count > 0
+            ? $"Найдено {_results.Count} прецедентов. Лучшее совпадение: «{_results[0].SituationName}» ({_results[0].SimilarityPercent})"
+            : "Подходящих прецедентов не найдено. Снизьте порог сходства.",
+            _results.Count > 0 ? "ok" : "warn");
+
+        _isAnalyzing = false;
+    }
+
+    void ClearAll()
+    {
+        _situationName = _situationDesc = _statusMsg = "";
+        foreach (var p in _parameters) p.Value = 0;
+        _results.Clear(); _selected = null; _analyzed = false;
+    }
+
+    void ShowLearnModal()
+    {
+        _learn = new LearnDialogResult { SituationTitle = _situationName };
+        _learnError = false;
+        _showLearnModal = true;
+    }
+
+    void CloseLearnModal() => _showLearnModal = false;
+
+    async Task SavePrecedentAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_learn.DecisionTitle))
+        {
+            _learnError = true;
+            return;
+        }
+
+        var situation = BuildSituation();
+        situation.Name = string.IsNullOrWhiteSpace(_learn.SituationTitle)
+            ? $"Ситуация {DateTime.Now:dd.MM.yyyy HH:mm}"
+            : _learn.SituationTitle;
+
+        var decision = new Decision(_learn.DecisionTitle, _learn.DecisionDescription, _learn.Priority);
+        await Engine.LearnAsync(situation, decision, _learn.Category);
+
+        RefreshCategories();
+        SetStatus($"Прецедент «{situation.Name}» добавлен в базу знаний.", "ok");
+        _showLearnModal = false;
+    }
+
+    // ── Helpers ────────────────────────────────────────────────────────────
+    Situation BuildSituation() => new()
+    {
+        Name = _situationName,
+        Description = _situationDesc,
+        Parameters = _parameters.Where(p => !string.IsNullOrWhiteSpace(p.Name)).ToList()
+    };
+
+    void RefreshCategories() => _categories = KbService.GetCategories().ToList();
+
+    void SetStatus(string msg, string cls) { _statusMsg = msg; _statusClass = cls; }
+
+    string GetSimilarityClass(double s) => s >= 0.9 ? "sim-high" : s >= 0.7 ? "sim-med" : "sim-low";
+    string GetConfidenceClass(double s) => s >= 0.9 ? "conf-high" : s >= 0.7 ? "conf-med" : "conf-low";
+}

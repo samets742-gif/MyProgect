@@ -1,0 +1,38 @@
+@inherits LayoutComponentBase
+
+<div class="app-shell">
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="header-title">
+                <span class="header-logo">🧠</span>
+                <div>
+                    <div class="header-name">СППР</div>
+                    <div class="header-sub">Ситуационный подход</div>
+                </div>
+            </div>
+            <nav class="top-nav">
+                <NavLink href="" Match="NavLinkMatch.All" class="nav-link">
+                    Анализ
+                </NavLink>
+                <NavLink href="knowledge-base" class="nav-link">
+                    База знаний
+                </NavLink>
+            </nav>
+        </div>
+    </header>
+
+    <main class="app-main">
+        @Body
+    </main>
+
+    <nav class="bottom-nav">
+        <NavLink href="" Match="NavLinkMatch.All" class="bottom-nav-item">
+            <span class="nav-icon">🔍</span>
+            <span class="nav-label">Анализ</span>
+        </NavLink>
+        <NavLink href="knowledge-base" class="bottom-nav-item">
+            <span class="nav-icon">📚</span>
+            <span class="nav-label">База знаний</span>
+        </NavLink>
+    </nav>
+</div>

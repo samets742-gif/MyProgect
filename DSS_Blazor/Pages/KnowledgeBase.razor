@@ -1,0 +1,152 @@
+@page "/knowledge-base"
+@inject KnowledgeBaseService KbService
+@inject DecisionEngine Engine
+
+<PageTitle>База знаний</PageTitle>
+
+@if (!_initialized)
+{
+    <div class="loading-screen">
+        <div class="spinner"></div>
+        <p>Загрузка…</p>
+    </div>
+}
+else
+{
+    <div class="kb-page">
+        <!-- Шапка с поиском -->
+        <div class="kb-toolbar">
+            <input class="form-input search-input" @bind="_search" @bind:event="oninput"
+                   placeholder="🔍 Поиск по ситуации, категории, решению..."/>
+            <button class="btn btn-red btn-sm" @onclick="ResetKbAsync">
+                ↺ Сбросить
+            </button>
+        </div>
+
+        <p class="hint">Записей: @_filtered.Count / @KbService.Entries.Count</p>
+
+        <!-- Список прецедентов -->
+        <div class="kb-list">
+            @foreach (var entry in _filtered)
+            {
+                <div class="kb-card @(_selected?.Id == entry.Id ? "selected" : "")"
+                     @onclick="() => SelectEntry(entry)">
+                    <div class="kb-card-header">
+                        <div>
+                            <div class="kb-title">@entry.ReferenceSituation.Name</div>
+                            <div class="kb-decision">@entry.Decision.Title</div>
+                        </div>
+                        <div class="kb-meta">
+                            <span class="tag">@entry.Category</span>
+                            <span class="hint">×@entry.UsageCount</span>
+                        </div>
+                    </div>
+
+                    @if (_selected?.Id == entry.Id)
+                    {
+                        <div class="kb-detail">
+                            <div class="kb-detail-cols">
+                                <!-- Параметры эталона -->
+                                <div>
+                                    <p class="detail-label">Параметры эталона:</p>
+                                    @foreach (var p in entry.ReferenceSituation.Parameters)
+                                    {
+                                        <div class="param-chip">
+                                            <span>@p.Name</span>
+                                            <strong>@p.Value.ToString("F1") @p.Unit</strong>
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Решение -->
+                                <div>
+                                    <p class="detail-label">Решение:</p>
+                                    <p>@entry.Decision.Description</p>
+                                    @if (entry.Decision.Actions.Any())
+                                    {
+                                        <div class="actions-list-sm">
+                                            @foreach (var a in entry.Decision.Actions)
+                                            {
+                                                <div>• @a</div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <button class="btn btn-red btn-sm mt-8"
+                                    @onclick:stopPropagation="true"
+                                    @onclick="() => DeleteEntryAsync(entry)">
+                                🗑 Удалить прецедент
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (!_filtered.Any())
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>Ничего не найдено</p>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(_statusMsg))
+{
+    <div class="toast @_statusClass">@_statusMsg</div>
+}
+
+@code {
+    bool _initialized;
+    string _search = "", _statusMsg = "", _statusClass = "";
+    KnowledgeBaseEntry? _selected;
+    List<KnowledgeBaseEntry> _filtered = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await KbService.InitializeAsync();
+        Filter();
+        _initialized = true;
+    }
+
+    void SelectEntry(KnowledgeBaseEntry e) =>
+        _selected = _selected?.Id == e.Id ? null : e;
+
+    void Filter()
+    {
+        _filtered = string.IsNullOrWhiteSpace(_search)
+            ? KbService.Entries.ToList()
+            : KbService.Entries.Where(e =>
+                e.ReferenceSituation.Name.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
+                e.Category.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
+                e.Decision.Title.Contains(_search, StringComparison.OrdinalIgnoreCase)
+              ).ToList();
+    }
+
+    async Task DeleteEntryAsync(KnowledgeBaseEntry e)
+    {
+        KbService.Remove(e.Id);
+        await KbService.SaveAsync();
+        if (_selected?.Id == e.Id) _selected = null;
+        Filter();
+        ShowToast("Запись удалена.", "ok");
+    }
+
+    async Task ResetKbAsync()
+    {
+        await KbService.ResetToDefaultAsync();
+        _selected = null;
+        Filter();
+        ShowToast("База знаний сброшена к исходному состоянию.", "ok");
+    }
+
+    void ShowToast(string msg, string cls)
+    {
+        _statusMsg = msg; _statusClass = cls;
+        _ = Task.Delay(3000).ContinueWith(_ => { _statusMsg = ""; InvokeAsync(StateHasChanged); });
+    }
+}
