@@ -1,0 +1,44 @@
+name: Публикация СППР на GitHub Pages
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:   # позволяет запустить вручную из вкладки Actions
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore packages
+        run: dotnet restore DSS_Blazor/DSS_Blazor.csproj
+
+      - name: Publish Blazor WASM
+        run: |
+          dotnet publish DSS_Blazor/DSS_Blazor.csproj \
+            -c Release \
+            -o publish
+
+      - name: Add .nojekyll
+        run: touch publish/wwwroot/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: publish/wwwroot
+          force_orphan: true
+          commit_message: "deploy: auto-publish СППР Blazor app"
