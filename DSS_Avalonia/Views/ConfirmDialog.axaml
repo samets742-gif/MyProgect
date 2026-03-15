@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DSS_Avalonia.Views.ConfirmDialog"
+        Width="380" Height="160"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#F0F4F8">
+
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Padding" Value="20,7"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+  </Window.Styles>
+
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="#2E5FA3" Padding="14,8">
+      <TextBlock x:Name="TitleText" FontSize="13" FontWeight="Bold" Foreground="White"/>
+    </Border>
+
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                HorizontalAlignment="Right" Margin="0,0,16,14" Spacing="8">
+      <Button x:Name="YesBtn" Content="Да"   Background="#27AE60" Click="OnYes"/>
+      <Button x:Name="NoBtn"  Content="Нет"  Background="#90A4AE" Click="OnNo"/>
+    </StackPanel>
+
+    <TextBlock x:Name="MessageText" Margin="16,14" TextWrapping="Wrap"
+               FontSize="13" VerticalAlignment="Center"/>
+  </DockPanel>
+</Window>

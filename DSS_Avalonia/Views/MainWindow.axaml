@@ -1,0 +1,283 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DSS_Avalonia.Views.MainWindow"
+        Title="СППР — Ситуационный подход к принятию решений"
+        Width="1100" Height="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#F0F4F8">
+
+  <Window.Styles>
+    <!-- Кнопки -->
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="#2E5FA3"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#1A3F7A"/>
+    </Style>
+    <Style Selector="Button.primary:disabled /template/ ContentPresenter">
+      <Setter Property="Background" Value="#B0BEC5"/>
+    </Style>
+
+    <Style Selector="Button.green">
+      <Setter Property="Background" Value="#27AE60"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.green:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#1E8449"/>
+    </Style>
+
+    <Style Selector="Button.red">
+      <Setter Property="Background" Value="#E74C3C"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.red:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#C0392B"/>
+    </Style>
+
+    <Style Selector="TextBlock.section-header">
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Foreground" Value="#2E5FA3"/>
+      <Setter Property="Margin" Value="0,0,0,6"/>
+    </Style>
+  </Window.Styles>
+
+  <DockPanel>
+
+    <!-- ═══ Шапка ═══ -->
+    <Border DockPanel.Dock="Top" Background="#2E5FA3" Padding="16,10">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel>
+          <TextBlock Text="СППР на основе ситуационного подхода"
+                     FontSize="18" FontWeight="Bold" Foreground="White"/>
+          <TextBlock Text="Система поддержки принятия решений · Анализ и распознавание ситуаций"
+                     FontSize="11" Foreground="#BBDEFB"/>
+        </StackPanel>
+        <Button Grid.Column="1" Classes="green"
+                Content="База знаний" Padding="14,6" FontSize="13"
+                Command="{Binding OpenKnowledgeBaseCommand}"/>
+      </Grid>
+    </Border>
+
+    <!-- ═══ Строка статуса ═══ -->
+    <Border DockPanel.Dock="Bottom" Background="#E3F2FD" Padding="12,6">
+      <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="#1A237E"/>
+    </Border>
+
+    <!-- ═══ Основной контент ═══ -->
+    <Grid Margin="8">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="370"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <!-- ══ Левая панель ══ -->
+      <StackPanel Grid.Column="0" Margin="0,0,6,0" Spacing="6">
+
+        <!-- Описание ситуации -->
+        <Border Background="White" CornerRadius="6" Padding="12"
+                BoxShadow="0 2 8 0 #18000000">
+          <StackPanel Spacing="4">
+            <TextBlock Classes="section-header" Text="Описание текущей ситуации"/>
+            <TextBlock Text="Название:" FontSize="12"/>
+            <TextBox Text="{Binding SituationName}" Margin="0,0,0,4"/>
+            <TextBlock Text="Описание (необязательно):" FontSize="12"/>
+            <TextBox Text="{Binding SituationDescription}"
+                     Height="52" TextWrapping="Wrap" AcceptsReturn="True"/>
+          </StackPanel>
+        </Border>
+
+        <!-- Параметры -->
+        <Border Background="White" CornerRadius="6" Padding="12"
+                BoxShadow="0 2 8 0 #18000000">
+          <StackPanel Spacing="4">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+              <TextBlock Classes="section-header" Text="Параметры ситуации"
+                         VerticalAlignment="Center"/>
+              <Button Grid.Column="1" Classes="green" Content="+ Добавить"
+                      FontSize="11" Padding="8,3"
+                      Command="{Binding AddParameterCommand}"/>
+              <Button Grid.Column="2" Classes="red" Content="− Удалить"
+                      FontSize="11" Padding="8,3" Margin="4,0,0,0"
+                      Command="{Binding RemoveParameterCommand}"
+                      CommandParameter="{Binding #ParamsGrid.SelectedItem}"/>
+            </Grid>
+            <DataGrid x:Name="ParamsGrid"
+                      ItemsSource="{Binding CurrentParameters}"
+                      AutoGenerateColumns="False"
+                      
+                      Height="190"
+                      GridLinesVisibility="Horizontal"
+                      SelectionMode="Single"
+                      BorderThickness="1">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Параметр" Binding="{Binding Name}"   Width="110"/>
+                <DataGridTextColumn Header="Значение" Binding="{Binding Value}"  Width="70"/>
+                <DataGridTextColumn Header="Ед.изм."  Binding="{Binding Unit}"   Width="55"/>
+                <DataGridTextColumn Header="Вес"
+                                    Binding="{Binding Weight, StringFormat=F2}"  Width="45"/>
+              </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock Text="Вес [0..1] — важность параметра при сравнении"
+                       FontSize="10" Foreground="#78909C"/>
+          </StackPanel>
+        </Border>
+
+        <!-- Настройки -->
+        <Border Background="White" CornerRadius="6" Padding="12"
+                BoxShadow="0 2 8 0 #18000000">
+          <StackPanel Spacing="6">
+            <TextBlock Classes="section-header" Text="Настройки анализа"/>
+            <Grid ColumnDefinitions="*,*">
+              <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                <TextBlock Text="Порог сходства:" FontSize="11"/>
+                <Slider Minimum="0.1" Maximum="0.99" TickFrequency="0.05"
+                        Value="{Binding SimilarityThreshold}"/>
+                <TextBlock Text="{Binding SimilarityThreshold, StringFormat={}{0:P0}}"
+                           FontSize="11" HorizontalAlignment="Center" Foreground="#2E5FA3"/>
+              </StackPanel>
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="Макс. результатов:" FontSize="11"/>
+                <Slider Minimum="1" Maximum="10" TickFrequency="1"
+                        Value="{Binding MaxResults}"/>
+                <TextBlock Text="{Binding MaxResults}"
+                           FontSize="11" HorizontalAlignment="Center" Foreground="#2E5FA3"/>
+              </StackPanel>
+            </Grid>
+            <TextBlock Text="Фильтр по категории:" FontSize="11"/>
+            <ComboBox ItemsSource="{Binding Categories}"
+                      SelectedItem="{Binding SelectedCategory}"
+                      HorizontalAlignment="Stretch"/>
+          </StackPanel>
+        </Border>
+
+        <!-- Кнопки действий -->
+        <Border Background="White" CornerRadius="6" Padding="12"
+                BoxShadow="0 2 8 0 #18000000">
+          <StackPanel Spacing="6">
+            <Button Classes="primary" Content="▶  Анализ ситуации"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                    Padding="0,10" FontSize="14" FontWeight="SemiBold"
+                    Command="{Binding AnalyzeCommand}"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
+              <Button Classes="green" Content="Сохранить как прецедент"
+                      FontSize="11" Padding="10,5"
+                      Command="{Binding LearnCommand}"/>
+              <Button Classes="red" Content="Очистить"
+                      FontSize="11" Padding="10,5"
+                      Command="{Binding ClearCommand}"/>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+      <!-- ══ Правая панель: результаты ══ -->
+      <Grid Grid.Column="1" RowDefinitions="Auto,*,210">
+
+        <TextBlock Grid.Row="0" Text="Результаты распознавания"
+                   Classes="section-header" Margin="6,6,0,4"/>
+
+        <!-- Список результатов -->
+        <Border Grid.Row="1" Background="White" CornerRadius="6"
+                Margin="4,0,0,6" BoxShadow="0 2 8 0 #18000000">
+          <ListBox ItemsSource="{Binding Results}"
+                   SelectedItem="{Binding SelectedResult}"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Border Margin="2" Padding="8,6" CornerRadius="4"
+                        BorderBrush="#E0E0E0" BorderThickness="1">
+                  <Grid ColumnDefinitions="*,90,80">
+                    <StackPanel>
+                      <TextBlock Text="{Binding SituationName}"
+                                 FontWeight="SemiBold" FontSize="13"/>
+                      <TextBlock Text="{Binding RecommendedDecision.Title}"
+                                 Foreground="#546E7A" FontSize="11"/>
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="Категория:" FontSize="10" Foreground="#78909C"/>
+                        <TextBlock Text="{Binding Category}" FontSize="10" Foreground="#78909C"/>
+                      </StackPanel>
+                    </StackPanel>
+
+                    <!-- Процент сходства -->
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                      <TextBlock Text="{Binding SimilarityPercent}"
+                                 FontSize="18" FontWeight="Bold"
+                                 HorizontalAlignment="Center" Foreground="#2E5FA3"/>
+                      <TextBlock Text="сходство" FontSize="9"
+                                 HorizontalAlignment="Center" Foreground="#78909C"/>
+                    </StackPanel>
+
+                    <!-- Уровень уверенности -->
+                    <Border Grid.Column="2" CornerRadius="3" Padding="6,3"
+                            VerticalAlignment="Center" HorizontalAlignment="Center"
+                            Background="#C8E6C9">
+                      <TextBlock Text="{Binding ConfidenceLevel}"
+                                 FontSize="11" FontWeight="SemiBold"/>
+                    </Border>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Border>
+
+        <!-- Детали выбранного решения -->
+        <Border Grid.Row="2" Background="White" CornerRadius="6"
+                Padding="12" Margin="4,0,0,0" BoxShadow="0 2 8 0 #18000000">
+          <StackPanel>
+            <TextBlock Classes="section-header" Text="Рекомендуемое решение"/>
+            <Grid ColumnDefinitions="*,*">
+              <StackPanel Grid.Column="0" Margin="0,0,10,0" Spacing="4">
+                <TextBlock Text="{Binding SelectedResult.RecommendedDecision.Title, FallbackValue='—'}"
+                           FontSize="14" FontWeight="Bold"
+                           Foreground="#2E5FA3" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding SelectedResult.RecommendedDecision.Description, FallbackValue=''}"
+                           FontSize="12" TextWrapping="Wrap" Foreground="#37474F"/>
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <TextBlock Text="Приоритет:" FontSize="11" Foreground="#78909C"/>
+                  <TextBlock Text="{Binding SelectedResult.RecommendedDecision.Priority, FallbackValue='—'}"
+                             FontSize="11" Foreground="#78909C"/>
+                </StackPanel>
+              </StackPanel>
+
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="Действия:" FontSize="12" FontWeight="SemiBold"/>
+                <ItemsControl ItemsSource="{Binding SelectedResult.RecommendedDecision.Actions}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock FontSize="12" TextWrapping="Wrap" Margin="0,2">
+                        <Run Text="• "/>
+                        <Run Text="{Binding}"/>
+                      </TextBlock>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </Border>
+      </Grid>
+    </Grid>
+  </DockPanel>
+</Window>

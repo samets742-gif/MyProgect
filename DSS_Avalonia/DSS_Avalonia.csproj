@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>DSS_Avalonia</RootNamespace>
+    <AssemblyName>DSS_Avalonia</AssemblyName>
+    <BuiltInCompositor>enable</BuiltInCompositor>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia"                    Version="11.2.3" />
+    <PackageReference Include="Avalonia.Desktop"           Version="11.2.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent"     Version="11.2.3" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Fonts.Inter"       Version="11.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\knowledge_base.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**"/>
+  </ItemGroup>
+
+</Project>

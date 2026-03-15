@@ -1,0 +1,79 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DSS_Avalonia.Views.LearnDialog"
+        Title="Добавить прецедент"
+        Width="440" Height="370"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#F0F4F8">
+
+  <Window.Styles>
+    <Style Selector="Button.action">
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Padding" Value="16,7"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.save">
+      <Setter Property="Background" Value="#27AE60"/>
+    </Style>
+    <Style Selector="Button.save:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#1E8449"/>
+    </Style>
+    <Style Selector="Button.cancel">
+      <Setter Property="Background" Value="#90A4AE"/>
+    </Style>
+    <Style Selector="Button.cancel:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#607D8B"/>
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="Padding" Value="6,4"/>
+      <Setter Property="Margin" Value="0,0,0,8"/>
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Margin" Value="0,0,0,2"/>
+    </Style>
+  </Window.Styles>
+
+  <DockPanel>
+    <!-- Шапка -->
+    <Border DockPanel.Dock="Top" Background="#2E5FA3" Padding="16,10">
+      <TextBlock Text="Сохранение нового прецедента"
+                 FontSize="14" FontWeight="Bold" Foreground="White"/>
+    </Border>
+
+    <!-- Кнопки -->
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                HorizontalAlignment="Right" Margin="16,0,16,16" Spacing="8">
+      <Button Classes="action save" Content="Сохранить" Click="OnSave"/>
+      <Button Classes="action cancel" Content="Отмена"   Click="OnCancel"/>
+    </StackPanel>
+
+    <!-- Форма -->
+    <StackPanel Margin="16,12">
+      <TextBlock Classes="label" Text="Название ситуации:"/>
+      <TextBox x:Name="TitleBox"/>
+
+      <TextBlock Classes="label" Text="Категория:"/>
+      <TextBox x:Name="CategoryBox" Text="Общее"/>
+
+      <TextBlock Classes="label" Text="Название решения:"/>
+      <TextBox x:Name="DecisionTitleBox"/>
+
+      <TextBlock Classes="label" Text="Описание / действия:"/>
+      <TextBox x:Name="DecisionDescBox" Height="70"
+               TextWrapping="Wrap" AcceptsReturn="True"/>
+
+      <StackPanel Orientation="Horizontal" Spacing="10">
+        <TextBlock Text="Приоритет:" VerticalAlignment="Center" FontSize="12"/>
+        <ComboBox x:Name="PriorityBox" Width="130" SelectedIndex="0">
+          <ComboBoxItem Content="1 — высокий"/>
+          <ComboBoxItem Content="2 — средний"/>
+          <ComboBoxItem Content="3 — низкий"/>
+        </ComboBox>
+      </StackPanel>
+    </StackPanel>
+  </DockPanel>
+</Window>
